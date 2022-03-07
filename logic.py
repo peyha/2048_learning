@@ -20,6 +20,13 @@ def move(direction, board):
     if direction == "d":
         return moveRight(board)
 
+def isFull(board):
+    for i in range(4):
+        for j in range(4):
+            if board[i][j] == 0:
+                return False
+    return True
+
 
 def checkGameStatus(board, max_tile=2048):
     """
