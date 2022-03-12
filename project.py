@@ -14,8 +14,10 @@ screen = pygame.display.set_mode(
 class GameEnv(gym.Env):
     def __init__(self,env_config={}):
         #16 cases dans la grille
-        self.observation_space = gym.spaces.Box(low = np.zeros((4,4)),
-                                                high = 2048 * np.zeros((4,4)))
+        self.observation_space = gym.spaces.Box(low = 0,
+                                                high = 2048,
+                                                shape = (4, 4),
+                                                dtype = np.uint32)
 
         #4 directions possibles
         self.action_space = gym.spaces.Discrete(4) 
@@ -136,6 +138,7 @@ while run:
 environment.close()
 pygame.quit()
 '''
+#TODO adapter cette partie à notre jeu
 env = GameEnv()
 q_table = np.zeros([env.observation_space.n, env.action_space.n])
 
