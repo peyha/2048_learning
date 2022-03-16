@@ -140,6 +140,22 @@ pygame.quit()
 '''
 #TODO adapter cette partie à notre jeu
 env = GameEnv()
+env.init_render()
+obs = env.reset()
+
+
+while True:
+    # Take a random action
+    action = env.action_space.sample()
+    obs, reward, done, info = env.step(action)
+    # Render the game
+    env.render()
+    
+    if done == True:
+        break
+
+env.close()
+'''
 q_table = np.zeros([env.observation_space.n, env.action_space.n])
 
 # Hyperparameters
@@ -182,3 +198,4 @@ for i in range(1, 100001):
         print(f"Episode: {i}")
 
 print("Training finished.\n")
+'''
