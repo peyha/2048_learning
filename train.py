@@ -73,14 +73,14 @@ class GameEnv(gym.Env):
             self.board = move(directions[int(action)], self.board)  
 
         cur_max = np.max(np.array(self.board))
-        reward = np.sum(np.array(self.board))
+        reward = (cur_max - self.lastReward) / 2048
         tmp = self.lastReward
-        self.lastReward= reward
+        self.lastReward= (cur_max - self.lastReward) / 2048
  
         if not isFull(self.board):
             self.board = fillTwoOrFour(self.board)
 
-        observation, reward, done, info = np.array(self.board).flatten(), reward - tmp, checkGameStatus(self.board) != "PLAY", {}
+        observation, reward, done, info = np.array(self.board).flatten(), reward, checkGameStatus(self.board) != "PLAY", {}
         return observation, reward, done, info
     
     def render(self):
@@ -260,9 +260,9 @@ np.random.seed(0)
 
 gamma = 0.99  
 replay_memory_capacity = 10000   
-lr = 1e-7
+lr = 1e-6
 target_net_update_steps = 10   
-batch_size = 32
+batch_size = 64
 bad_state_penalty = -20000
 min_samples_for_training = 1000
 
@@ -330,7 +330,7 @@ initial_value = 5.
 num_iterations = 2000
 exp_decay = np.exp(-np.log(initial_value) / num_iterations * 6) 
 exploration_profile = [initial_value * (exp_decay ** i) for i in range(num_iterations)]
-epsilon_profile = 1 - np.linspace(0., 0.9, num_iterations // 2)
+epsilon_profile = 1 - np.linspace(0., 0.3, num_iterations // 2)
 
 epsilon_profile = np.concatenate([epsilon_profile, np.zeros(num_iterations - num_iterations // 2)])
 
@@ -353,6 +353,7 @@ moyennes = []
 moy = 0
 for episode_num, eps in enumerate(exploration_profile):
 
+    print("Achieved a score of {}".format(np.max(np.array(env.board))))
     state = env.reset()
     score = 0
     done = False
@@ -395,7 +396,7 @@ for episode_num, eps in enumerate(exploration_profile):
     if episode_num % 10 == 9:
         moyennes.append(moy / 10)
         moy = 0
-        print(f"Moyenne des 10 derniers tests: {moyennes[-1]}")
+        print(f"Moyenne des 10 derniers tests at iteration {episode_num}: {moyennes[-1]}")
 
 
     #print(f"EPISODE: {episode_num + 1} - FINAL SCORE: {score} - Epsilon: {eps}") # Print the final score
