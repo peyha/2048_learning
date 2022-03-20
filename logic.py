@@ -20,6 +20,29 @@ def move(direction, board):
     if direction == "d":
         return moveRight(board)
 
+def equal_board(board1, board2):
+    for i in range(4):
+        for j in range(4):
+            if board1[i][j] != board2[i][j]:
+                return False
+    return True
+
+def copy_board(board):
+    new_board = []
+    for row in board:
+        line = []
+        for cell in row:
+            line.append(cell)
+        new_board.append(line)
+    return new_board
+
+def legal_moves(board):
+
+    allowed = [False] * 4
+    for i, direction in enumerate(["w", "s", "a", "d"]):
+        allowed[i] = not equal_board(board, move(direction, copy_board(board)))
+    return allowed
+
 def isFull(board):
     for i in range(4):
         for j in range(4):
