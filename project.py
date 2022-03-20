@@ -137,7 +137,7 @@ while run:
 
 environment.close()
 pygame.quit()
-'''
+
 #TODO adapter cette partie à notre jeu
 env = GameEnv()
 env.init_render()
@@ -156,46 +156,24 @@ while True:
 
 env.close()
 '''
-q_table = np.zeros([env.observation_space.n, env.action_space.n])
 
-# Hyperparameters
-alpha = 0.1
-gamma = 0.6
-epsilon = 0.1
+#let's train the agent
+env = GameEnv()
+env.init_render()
 
-# For plotting metrics
-all_epochs = []
-all_penalties = []
+# Traning parameters
+ initial_lr = 3e-4
+ discount_factor = 0.99
+ gae_lambda = 0.95
+ ppo_epsilon = 0.2
+ value_scale = 0.5
+ entropy_scale = 0.01
+ horizon = 128
+ num_epochs = 10
+ batch_size = 128
+ num_envs = 16
 
-for i in range(1, 100001):
-    state = env.reset()
+ # Environment constants
+ num_actions = test_env.action_space.n
 
-    epochs, penalties, reward, = 0, 0, 0
-    done = False
-    
-    while not done:
-        if random.uniform(0, 1) < epsilon:
-            action = env.action_space.sample() # Explore action space
-        else:
-            action = np.argmax(q_table[state]) # Exploit learned values
 
-        next_state, reward, done, info = env.step(action) 
-        
-        old_value = q_table[state, action]
-        next_max = np.max(q_table[next_state])
-        
-        new_value = (1 - alpha) * old_value + alpha * (reward + gamma * next_max)
-        q_table[state, action] = new_value
-
-        if reward == -10:
-            penalties += 1
-
-        state = next_state
-        epochs += 1
-        
-    if i % 100 == 0:
-        clear_output(wait=True)
-        print(f"Episode: {i}")
-
-print("Training finished.\n")
-'''
